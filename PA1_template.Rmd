@@ -33,7 +33,7 @@ str(activity)
 Calculate the total number of steps per day
 
 ```{r}
-steps_per_day<-activity%<>%
+steps_per_day<-activity%>%
   drop_na()%>%
   group_by(date)%>%
   summarise(total_steps=sum(steps))
@@ -51,14 +51,11 @@ steps_per_day%>%
 Calculate the mean and median of the total number of steps taken per day
 
 ```{r}
-steps_per_day%<>%
+steps_per_day%>%
   summarise(mean_steps=mean(total_steps),
             median_steps=median(total_steps))
 ```
 
-**Conclustion**: The median number of steps taken per day was
-`r steps_per_day$median_steps`. The mean number of steps taken per day
-was `r steps_per_day$mean_steps`.
 
 ## What is the average daily activity pattern?
 
@@ -91,7 +88,49 @@ Which 5-minute interval contains the maximum number of steps?
 max(daily_activity)
 ```
 
-
 ## Imputing missing values
+
+Assess number of missing values
+```{r}
+activity%>%
+  filter(is.na(steps))%>%
+  nrow()
+```
+Fill the missing values with the mean of the respective interval
+```{r}
+activiyt_imputed<-
+  activity%>%
+  group_by(interval)%>%
+  mutate(average_step=mean(steps, na.rm=TRUE),
+         steps_imp=case_when(is.na(steps)~average_step,
+                             TRUE~steps))
+```
+
+Calculate the total number of steps per day
+
+```{r}
+steps_per_day_imp<-activiyt_imputed%>%
+  group_by(date)%>%
+  summarise(total_steps=sum(steps, na.rm=TRUE),
+         total_steps_imp=sum(steps_imp))%>%
+  gather(., key="type", value = "step", -date)
+```
+
+Plot histogram of total number of steps taken each day
+
+```{r}
+steps_per_day_imp%>%
+  ggplot()+
+  geom_histogram(aes(step, fill=type), color="black", position = position_dodge())
+```
+
+Calculate the mean and median of the total number of steps taken per day
+
+```{r}
+steps_per_day_imp%>%
+  group_by(type)%>%
+  summarise(mean_steps=mean(step),
+            median_steps=median(step))
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
