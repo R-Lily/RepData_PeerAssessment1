@@ -4,14 +4,55 @@ output:
   html_document:
     keep_md: true
 ---
+## Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 
+library(tidyverse)
+library(magrittr)
+```
 
 ## Loading and preprocessing the data
-
-
+```{r}
+activity <- read_csv("activity.zip")
+```
+Inspect the data set 
+```{r}
+str(activity)
+```
 
 ## What is mean total number of steps taken per day?
 
+Calculate the total number of steps per day
+```{r}
+activity%<>%
+  drop_na()%>%
+  group_by(date)%>%
+  mutate(total_steps=sum(steps))
+```
+
+Plot histogramm of total number of steps taken each day  
+```{r}
+activity%>%
+  group_by(date)%>%
+  distinct(total_steps, .keep_all=TRUE)%>%
+  ggplot()+
+  geom_histogram(aes(total_steps), fill="white", color="black")+
+  labs(x="total number of steps per day")
+```
+
+Calculate the mean and median of the total number of steps taken per day
+
+```{r}
+activity%>%
+  group_by(date)%>%
+  distinct(total_steps, .keep_all=TRUE)%>%
+  ungroup%>%
+  summarise(mean_steps=mean(total_steps),
+            median_steps=median(total_steps))
+  
+```
+**Conclustion**: The median number of steps taken per day was 'r 
 
 
 ## What is the average daily activity pattern?
