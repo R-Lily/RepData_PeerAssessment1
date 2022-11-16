@@ -1,8 +1,9 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
+  pdf_document: default
 ---
 
 ## Setup
@@ -234,6 +235,19 @@ steps_per_day_imp%>%
 
 ![](PA1_template_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
+Save Histogram
+
+```r
+ggsave("steps_per_day_Histogram_imp.png")
+```
+
+```
+## Saving 7 x 5 in image
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
 Calculate the mean and median of the total number of steps taken per day using both the raw numbers and the imputed numbers. What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
@@ -251,7 +265,7 @@ steps_per_day_imp%>%
 ## 1 total_steps          9354.       10395 
 ## 2 total_steps_imp     10766.       10766.
 ```
-Imputation of missing values increases the mean and median values. 
+**Conclusion**:Imputation of missing values increases the mean and median values. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -264,7 +278,8 @@ activiyt_imputed%<>%
                    TRUE~"weekday"))
 ```
 
-Compare the average number of steps across weekdays and weekends
+Compare the average number of steps across weekdays and weekends  
+
 a) In individual panels
 
 ```r
@@ -281,8 +296,20 @@ activiyt_imputed%>%
 ## `.groups` argument.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
-a) In one panel
+![](PA1_template_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+Save panel plot
+
+```r
+ggsave("Activity_Weekend_Weekday.png")
+```
+
+```
+## Saving 7 x 5 in image
+```
+
+
+b) In one panel
 
 ```r
 activiyt_imputed%>%
@@ -297,4 +324,4 @@ activiyt_imputed%>%
 ## `.groups` argument.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
