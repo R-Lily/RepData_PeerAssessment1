@@ -55,7 +55,9 @@ Calculate the total number of steps per day
 steps_per_day<-activity%>%
   drop_na()%>%
   group_by(date)%>%
-  summarise(total_steps=sum(steps))
+  summarise(total_steps=sum(steps),
+            mean_steps=mean(steps),
+            median_steps=median(steps))
 ```
 
 Plot histogram of total number of steps taken each day
@@ -102,7 +104,27 @@ steps_per_day%>%
 ## 1     10766.        10765
 ```
 
+Visualize mean and median number of steps taken each day
 
+```r
+steps_per_day%>%
+  gather(., key="statistic",value="count", -date)%>%
+  ggplot(aes(x=date, y=count))+
+  geom_col(aes(fill=statistic))+
+  facet_grid(statistic~., scales = "free")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+Save visualisation
+
+```r
+ggsave("Mean_Median_step_per_day.png")
+```
+
+```
+## Saving 7 x 5 in image
+```
 ## What is the average daily activity pattern?
 
 Visualize the daily activity pattern, including the average number of steps taken, averaged across all days.
@@ -116,7 +138,7 @@ activity%>%
   labs(x="time intervall #", y="steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 Calculate the average daily activity
 
@@ -137,7 +159,7 @@ daily_activity%>%
   labs(x="time intervall #", y="steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 Save Histogram
 
@@ -210,7 +232,7 @@ steps_per_day_imp%>%
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 Calculate the mean and median of the total number of steps taken per day using both the raw numbers and the imputed numbers. What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
@@ -259,7 +281,7 @@ activiyt_imputed%>%
 ## `.groups` argument.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 a) In one panel
 
 ```r
@@ -275,4 +297,4 @@ activiyt_imputed%>%
 ## `.groups` argument.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-21-1.png)<!-- -->

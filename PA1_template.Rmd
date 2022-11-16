@@ -1,8 +1,9 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  pdf_document: default
   html_document:
-    keep_md: true
+    keep_md: yes
 ---
 
 ## Setup
@@ -36,7 +37,9 @@ Calculate the total number of steps per day
 steps_per_day<-activity%>%
   drop_na()%>%
   group_by(date)%>%
-  summarise(total_steps=sum(steps))
+  summarise(total_steps=sum(steps),
+            mean_steps=mean(steps),
+            median_steps=median(steps))
 ```
 
 Plot histogram of total number of steps taken each day
@@ -59,7 +62,19 @@ steps_per_day%>%
             median_steps=median(total_steps))
 ```
 
+Visualize mean and median number of steps taken each day
+```{r}
+steps_per_day%>%
+  gather(., key="statistic",value="count", -date)%>%
+  ggplot(aes(x=date, y=count))+
+  geom_col(aes(fill=statistic))+
+  facet_grid(statistic~., scales = "free")
+```
 
+Save visualisation
+```{r}
+ggsave("Mean_Median_step_per_day.png")
+```
 ## What is the average daily activity pattern?
 
 Visualize the daily activity pattern, including the average number of steps taken, averaged across all days.
