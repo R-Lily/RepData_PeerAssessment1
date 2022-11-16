@@ -47,9 +47,12 @@ steps_per_day%>%
   geom_histogram(aes(total_steps), fill="white", color="black")+
   labs(x="total number of steps per day")
 ```
+Save Histogram
+```{r}
+ggsave("steps_per_day_Histogram.png")
+```
 
-Calculate the mean and median of the total number of steps taken per day
-
+Calculate the mean and median of the total number of steps taken per day:
 ```{r}
 steps_per_day%>%
   summarise(mean_steps=mean(total_steps),
@@ -59,13 +62,14 @@ steps_per_day%>%
 
 ## What is the average daily activity pattern?
 
-Visualize the daily activity pattern, including the average number of steps taken, averaged across all days
+Visualize the daily activity pattern, including the average number of steps taken, averaged across all days.
 ```{r}
 activity%>%
   drop_na()%>%
   ggplot(aes(x=interval, y=steps))+
   geom_line(aes(group=date))+
-  stat_summary(fun = mean, color="red", geom = "line", size=3)
+  stat_summary(fun = mean, color="red", geom = "line", size=3)+
+  labs(x="time intervall #", y="steps")
 ```
 
 Calculate the average daily activity
@@ -81,11 +85,19 @@ Visualize the average daily activity pattern
 ```{r}
 daily_activity%>%
   ggplot(aes(x=interval, y=average_step))+
-  geom_line()
+  geom_line()+
+  labs(x="time intervall #", y="steps")
 ```
+
+Save Histogram
+```{r}
+ggsave("Time_series_average_steps.png")
+```
+
 Which 5-minute interval contains the maximum number of steps? 
 ```{r}
-max(daily_activity)
+daily_activity%>%
+  filter(average_step==max(daily_activity$average_step))
 ```
 
 ## Imputing missing values
@@ -106,7 +118,7 @@ activiyt_imputed<-
                              TRUE~steps))
 ```
 
-Calculate the total number of steps per day
+Calculate the total number of steps per day using both the raw numbers and the imputed numbers. 
 
 ```{r}
 steps_per_day_imp<-activiyt_imputed%>%
@@ -116,15 +128,14 @@ steps_per_day_imp<-activiyt_imputed%>%
   gather(., key="type", value = "step", -date)
 ```
 
-Plot histogram of total number of steps taken each day
-
+Plot histogram of total number of steps taken each day. Display values of raw data and imputed data side-by-side. 
 ```{r}
 steps_per_day_imp%>%
   ggplot()+
   geom_histogram(aes(step, fill=type), color="black", position = position_dodge())
 ```
 
-Calculate the mean and median of the total number of steps taken per day
+Calculate the mean and median of the total number of steps taken per day using both the raw numbers and the imputed numbers. What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ```{r}
 steps_per_day_imp%>%
@@ -132,5 +143,33 @@ steps_per_day_imp%>%
   summarise(mean_steps=mean(step),
             median_steps=median(step))
 ```
+Imputation of missing values increases the mean and median values. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Annotate "weekday" and "weekend".
+```{r}
+activiyt_imputed%<>%
+  rowwise()%>%
+  mutate(week=case_when(weekdays(date)%in%c("Samstag","Sonntag")~"weekend",
+                   TRUE~"weekday"))
+```
+
+Compare the average number of steps across weekdays and weekends
+a) In individual panels
+```{r}
+activiyt_imputed%>%
+  group_by(interval, week)%>%
+  summarise(average_step=mean(steps_imp))%>%
+  ggplot(aes(x=interval, y=average_step))+
+  geom_line()+
+  facet_grid(week~.)
+```
+a) In one panel
+```{r}
+activiyt_imputed%>%
+  group_by(interval, week)%>%
+  summarise(average_step=mean(steps_imp))%>%
+  ggplot(aes(x=interval, y=average_step, color=week))+
+  geom_line(size=1)
+```
