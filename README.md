@@ -69,6 +69,8 @@ steps_per_day%>%
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
 Save Histogram
 
 ```r
